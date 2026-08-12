@@ -1,0 +1,286 @@
+# AeroSpace config — i3-style keybindings
+# Docs: https://nikitabobko.github.io/AeroSpace/guide
+
+config-version = 2
+
+start-at-login = true
+
+# Config applies on save. Needed one manual reload to arm itself.
+auto-reload-config = true
+
+# Required under config-version = 2: workspaces are no longer inferred from
+# keybindings, so declare them explicitly or empty ones stop existing.
+# sketchybar iterates `aerospace list-workspaces --all` to build its items.
+persistent-workspaces = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "S"]
+
+# Normalization: keep tree clean like i3
+enable-normalization-flatten-containers = true
+enable-normalization-opposite-orientation-for-nested-containers = true
+
+# Default layout for new windows
+default-root-container-layout = 'tiles'
+default-root-container-orientation = 'auto'
+
+# Mouse follows focus (i3 default behavior). Without on-focus-changed the
+# cursor stays on the old window, so scroll/hover keeps hitting the wrong one.
+on-focused-monitor-changed = ['move-mouse monitor-lazy-center']
+on-focus-changed = ['move-mouse window-lazy-center']
+
+# Tell sketchybar which workspace is focused
+exec-on-workspace-change = [
+  '/bin/bash', '-c',
+  'sketchybar --trigger aerospace_workspace_change FOCUSED_WORKSPACE=$AEROSPACE_FOCUSED_WORKSPACE',
+]
+
+# Focus indicator. Tiled windows have no shadow between them, so without a
+# border it is hard to tell which one has focus. Colors match colors.sh.
+after-startup-command = [
+  'exec-and-forget borders active_color=0xff7aa2f7 inactive_color=0xff565f89 width=5.0',
+]
+
+# Don't let macOS "hide others" fight the tiler
+automatically-unhide-macos-hidden-apps = false
+
+# Accordion padding (0 = i3 tabbed look)
+accordion-padding = 30
+
+[gaps]
+inner.horizontal = 8
+inner.vertical   = 8
+outer.left       = 8
+outer.bottom     = 8
+# Do NOT add the bar height here. AeroSpace tiles inside NSScreen.visibleFrame,
+# which already excludes safeAreaInsets.top (38pt on this notched display), and
+# sketchybar (32pt) draws inside that same strip. Adding it again double-counts.
+outer.top        = 8
+outer.right      = 8
+
+# ─────────────────────────────────────────────
+# MAIN MODE
+# alt = Option key
+# ─────────────────────────────────────────────
+[mode.main.binding]
+
+# Terminal (i3: $mod+Return)
+alt-enter = 'exec-and-forget open -na iTerm'
+
+# Kill focused window (i3: $mod+Shift+q)
+alt-shift-q = 'close'
+
+# Focus — vim keys
+alt-h = 'focus left'
+alt-j = 'focus down'
+alt-k = 'focus up'
+alt-l = 'focus right'
+
+# Focus — arrows
+alt-left  = 'focus left'
+alt-down  = 'focus down'
+alt-up    = 'focus up'
+alt-right = 'focus right'
+
+# Move window — vim keys
+alt-shift-h = 'move left'
+alt-shift-j = 'move down'
+alt-shift-k = 'move up'
+alt-shift-l = 'move right'
+
+# Move window — arrows
+alt-shift-left  = 'move left'
+alt-shift-down  = 'move down'
+alt-shift-up    = 'move up'
+alt-shift-right = 'move right'
+
+# Tiling orientation (i3: $mod+h / $mod+v).
+# AeroSpace rejects 'split' while normalizations are on — use explicit layouts.
+alt-b = 'layout tiles horizontal'
+alt-v = 'layout tiles vertical'
+
+# Layouts
+alt-f       = 'fullscreen'                # AeroSpace fullscreen (stays tiled)
+alt-shift-f = 'macos-native-fullscreen'  # macOS green-button fullscreen (own Space)
+alt-e     = 'layout tiles horizontal vertical'   # i3: toggle split
+alt-w     = 'layout accordion horizontal vertical' # i3: tabbed/stacked
+alt-shift-space = 'layout floating tiling'       # i3: toggle floating
+
+# Rebalance / flatten
+alt-shift-e = 'flatten-workspace-tree'
+alt-shift-b = 'balance-sizes'
+
+# Focus back and forth (i3: $mod+a-ish)
+alt-tab = 'workspace-back-and-forth'
+alt-a   = 'focus-back-and-forth'
+
+# Workspaces
+alt-1 = 'workspace 1'
+alt-2 = 'workspace 2'
+alt-3 = 'workspace 3'
+alt-4 = 'workspace 4'
+alt-5 = 'workspace 5'
+alt-6 = 'workspace 6'
+alt-7 = 'workspace 7'
+alt-8 = 'workspace 8'
+alt-9 = 'workspace 9'
+alt-0 = 'workspace 10'
+
+# Move window to workspace
+alt-shift-1 = ['move-node-to-workspace 1', 'workspace 1']
+alt-shift-2 = ['move-node-to-workspace 2', 'workspace 2']
+alt-shift-3 = ['move-node-to-workspace 3', 'workspace 3']
+alt-shift-4 = ['move-node-to-workspace 4', 'workspace 4']
+alt-shift-5 = ['move-node-to-workspace 5', 'workspace 5']
+alt-shift-6 = ['move-node-to-workspace 6', 'workspace 6']
+alt-shift-7 = ['move-node-to-workspace 7', 'workspace 7']
+alt-shift-8 = ['move-node-to-workspace 8', 'workspace 8']
+alt-shift-9 = ['move-node-to-workspace 9', 'workspace 9']
+alt-shift-0 = ['move-node-to-workspace 10', 'workspace 10']
+
+# Multi-monitor
+alt-ctrl-h = 'focus-monitor left'
+alt-ctrl-l = 'focus-monitor right'
+alt-ctrl-shift-h = 'move-node-to-monitor left'
+alt-ctrl-shift-l = 'move-node-to-monitor right'
+
+# Enter resize mode (i3: $mod+r)
+alt-r = 'mode resize'
+
+# Enter join mode — build a nested container so layouts can be mixed
+alt-g = 'mode join'
+
+# Scratchpad (i3: $mod+minus / $mod+shift+minus)
+# Routed through bash so $HOME expands — exec-and-forget does not expand ~,
+# and a hardcoded /Users/<name> would break this repo on another machine.
+alt-minus       = 'exec-and-forget /bin/bash -c "$HOME/.config/aerospace/scratchpad.sh"'
+alt-shift-minus = 'move-node-to-workspace S'
+
+# Enter service mode (reload config, etc)
+alt-shift-semicolon = 'mode service'
+
+# ─────────────────────────────────────────────
+# RESIZE MODE — esc/enter to exit
+# ─────────────────────────────────────────────
+[mode.resize.binding]
+h = 'resize width -50'
+j = 'resize height +50'
+k = 'resize height -50'
+l = 'resize width +50'
+shift-h = 'resize width -150'
+shift-j = 'resize height +150'
+shift-k = 'resize height -150'
+shift-l = 'resize width +150'
+minus = 'resize smart -50'
+equal = 'resize smart +50'
+enter = 'mode main'
+esc   = 'mode main'
+
+# ─────────────────────────────────────────────
+# JOIN MODE — alt-g, then a direction
+# Pulls the focused window and its neighbour under a shared parent, which is
+# what makes mixed layouts possible: set that parent's orientation with
+# alt-b / alt-v afterwards and only those windows follow it.
+# Single keypress, then straight back to main.
+# ─────────────────────────────────────────────
+[mode.join.binding]
+h = ['join-with left', 'mode main']
+j = ['join-with down', 'mode main']
+k = ['join-with up', 'mode main']
+l = ['join-with right', 'mode main']
+left  = ['join-with left', 'mode main']
+down  = ['join-with down', 'mode main']
+up    = ['join-with up', 'mode main']
+right = ['join-with right', 'mode main']
+enter = 'mode main'
+esc   = 'mode main'
+
+# ─────────────────────────────────────────────
+# SERVICE MODE — alt-shift-;
+# ─────────────────────────────────────────────
+[mode.service.binding]
+r = ['reload-config', 'mode main']
+f = ['layout floating tiling', 'mode main']
+backspace = ['close-all-windows-but-current', 'mode main']
+esc = 'mode main'
+enter = 'mode main'
+# join-with moved to its own mode (alt-g) — nested under service mode it took
+# two chords to reach
+
+# ─────────────────────────────────────────────
+# WINDOW RULES
+# Only the FIRST matching rule runs unless it sets check-further-callbacks,
+# so order matters: the catch-all below is deliberately first and transparent,
+# float rules come next, workspace assignment last.
+# ─────────────────────────────────────────────
+
+# Repaint the bar when a window appears — sketchybar has no other way to learn
+# that a workspace stopped being empty.
+[[on-window-detected]]
+check-further-callbacks = true
+run = 'exec-and-forget sketchybar --trigger aerospace_workspace_change'
+
+# ── Float ──
+[[on-window-detected]]
+if.app-id = 'com.apple.systempreferences'
+run = 'layout floating'
+
+[[on-window-detected]]
+if.app-id = 'com.apple.finder'
+if.window-title-regex-substring = 'Info|Copy|Connect'
+run = 'layout floating'
+
+[[on-window-detected]]
+if.app-id = 'com.apple.ActivityMonitor'
+run = 'layout floating'
+
+[[on-window-detected]]
+if.app-id = 'com.apple.calculator'
+run = 'layout floating'
+
+# ── Assign apps to workspaces (i3: assign) ──
+# 1 terminal/containers  2 browser  3 IDE+DB+API  4 comms  5 media
+[[on-window-detected]]
+if.app-id = 'com.googlecode.iterm2'
+run = 'move-node-to-workspace 1'
+
+[[on-window-detected]]
+if.app-id = 'dev.kdrag0n.MacVirt'
+run = 'move-node-to-workspace 1'
+
+[[on-window-detected]]
+if.app-id = 'com.google.Chrome'
+run = 'move-node-to-workspace 2'
+
+[[on-window-detected]]
+if.app-id = 'com.apple.Safari'
+run = 'move-node-to-workspace 2'
+
+[[on-window-detected]]
+if.app-id = 'com.apple.dt.Xcode'
+run = 'move-node-to-workspace 3'
+
+[[on-window-detected]]
+if.app-id = 'com.google.android.studio'
+run = 'move-node-to-workspace 3'
+
+[[on-window-detected]]
+if.app-id = 'org.jkiss.dbeaver.core.product'
+run = 'move-node-to-workspace 3'
+
+[[on-window-detected]]
+if.app-id = 'com.postmanlabs.mac'
+run = 'move-node-to-workspace 3'
+
+[[on-window-detected]]
+if.app-id = 'com.hnc.Discord'
+run = 'move-node-to-workspace 4'
+
+[[on-window-detected]]
+if.app-id = 'us.zoom.xos'
+run = 'move-node-to-workspace 4'
+
+[[on-window-detected]]
+if.app-id = 'com.obsproject.obs-studio'
+run = 'move-node-to-workspace 5'
+
+[[on-window-detected]]
+if.app-id = 'com.apple.TransporterApp'
+run = 'move-node-to-workspace 5'
