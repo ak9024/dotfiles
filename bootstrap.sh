@@ -7,12 +7,14 @@ REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 log() { printf '\n==> %s\n' "$1"; }
 
 # ── Packages ──────────────────────────────────────────────────────────────
-# Homebrew refuses third-party taps until trusted. This grants trust to two
-# specific formulae, not to the whole tap.
+# Homebrew refuses third-party taps until trusted. This grants trust to the one
+# formula pulled from it, not to the whole tap.
 log "Taps and packages"
 brew tap FelixKratz/formulae
 brew trust --formula felixkratz/formulae/sketchybar
 brew install sketchybar
+# macOS 15+ ships /usr/bin/jq, but the media plugin needs it on older releases.
+command -v jq >/dev/null || brew install jq
 brew install --cask nikitabobko/tap/aerospace
 brew install --cask font-hack-nerd-font
 

@@ -2,8 +2,7 @@
 
 i3-style tiling on macOS: [AeroSpace](https://github.com/nikitabobko/AeroSpace)
 for window management, [SketchyBar](https://github.com/FelixKratz/SketchyBar)
-for the status bar, [JankyBorders](https://github.com/FelixKratz/JankyBorders)
-for the focus indicator.
+for the status bar.
 
 ## Install
 
@@ -21,8 +20,9 @@ Then finish the three manual permission steps it prints at the end.
 | `aerospace/scratchpad.sh` | `~/.config/aerospace/scratchpad.sh` |
 | `sketchybar/` | `~/.config/sketchybar/` |
 
-Edits apply live — `auto-reload-config = true` in AeroSpace, and it follows the
-symlink. SketchyBar needs `sketchybar --reload`.
+Edits apply live in both: `auto-reload-config = true` in AeroSpace and
+`--hotload on` in SketchyBar, and both follow the symlink. Plugin scripts are
+read per run, so only a `sketchybarrc` change triggers the reload.
 
 ## Keys
 
@@ -46,11 +46,13 @@ symlink. SketchyBar needs `sketchybar --reload`.
 | `alt+shift+space` | Toggle floating |
 | `alt+shift+e` | Flatten tree |
 | `alt+shift+b` | Balance sizes |
+| `alt+ctrl+h` / `alt+ctrl+l` | Focus monitor left / right |
+| `alt+ctrl+shift+h` / `alt+ctrl+shift+l` | Move window to monitor left / right |
 | `alt+minus` | Scratchpad toggle |
 | `alt+shift+minus` | Send window to scratchpad |
 | `alt+r` | Resize mode — `hjkl`, `esc` exits |
 | `alt+g` | Join mode — direction, then back to main |
-| `alt+shift+;` | Service mode — `r` reloads |
+| `alt+shift+;` | Service mode — `r` reload, `f` float, `backspace` close others |
 
 ### Join mode
 
@@ -58,6 +60,22 @@ Normalization flattens containers, so every window lands in the root and
 `alt+v` flips the whole workspace rather than one split. `alt+g` + direction
 puts two windows under a shared parent first; `alt+b`/`alt+v` then applies to
 just that parent. This is how mixed layouts get built.
+
+## Status bar
+
+| Position | Item |
+|---|---|
+| Left | Workspace numbers, then the focused app name |
+| Centre | Now playing, hidden when nothing is |
+| Right | Load average + free memory, volume, Wi-Fi, battery, clock |
+
+Workspaces show their number. White is focused, grey holds windows, and an
+empty workspace is not drawn at all — i3 behaviour. There is no highlight
+background and no window border; colour carries focus on its own.
+
+A single hidden `space_watcher` item repaints every workspace from one
+occupancy query. Giving each workspace its own script instead meant 11 shells
+and 11 AeroSpace queries per app switch, about 140ms against 37ms.
 
 ## Workspace assignment
 
@@ -84,7 +102,9 @@ Rules only fire on window *creation*. Already-open windows stay where they are.
   sketchybar draws in. Adding it again double-counts and wastes 32pt.
 - **`split` is rejected** while normalizations are enabled. Use explicit
   `layout tiles horizontal|vertical`, or `join-with`.
-- **Workspace icons lag on window close.** AeroSpace has no window-closed
-  callback; the bar catches up on the next focus change.
+- **Window close takes up to 5s to show.** AeroSpace has no window-closed
+  callback, so the bar polls on a 5s timer to notice a workspace emptying.
+  Everything else — focus, new windows, wake, display change — is event-driven
+  and immediate.
 - **SSID shows as "Wi-Fi".** macOS 14+ gates the network name behind Location
   Services. Not a config bug.
