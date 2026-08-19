@@ -3,7 +3,6 @@
 set -euo pipefail
 
 REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-APP_FONT_VERSION="v2.0.74"
 
 log() { printf '\n==> %s\n' "$1"; }
 
@@ -17,14 +16,6 @@ brew trust --formula felixkratz/formulae/borders
 brew install sketchybar borders
 brew install --cask nikitabobko/tap/aerospace
 brew install --cask font-hack-nerd-font
-
-# ── App icon font ─────────────────────────────────────────────────────────
-# Gitignored: a generated artifact, pinned here rather than committed.
-log "sketchybar-app-font $APP_FONT_VERSION"
-base="https://github.com/kvndrsslr/sketchybar-app-font/releases/download/$APP_FONT_VERSION"
-curl -fsSL -o "$HOME/Library/Fonts/sketchybar-app-font.ttf" "$base/sketchybar-app-font.ttf"
-curl -fsSL -o "$REPO/sketchybar/plugins/icon_map.sh" "$base/icon_map.sh"
-chmod +x "$REPO/sketchybar/plugins/icon_map.sh"
 
 # ── Symlinks ──────────────────────────────────────────────────────────────
 log "Linking configs"

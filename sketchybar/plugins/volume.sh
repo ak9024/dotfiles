@@ -2,12 +2,12 @@
 
 source "$CONFIG_DIR/colors.sh"
 
-# volume_change passes the level in $INFO; fall back to a query on forced updates.
-VOL="$INFO"
-if ! [[ "$VOL" =~ ^[0-9]+$ ]]; then
-  VOL=$(osascript -e 'output volume of (get volume settings)' 2>/dev/null)
-fi
-MUTED=$(osascript -e 'output muted of (get volume settings)' 2>/dev/null)
+# One osascript for both fields. Two separate calls cost ~306ms; this is ~147ms,
+# and osascript startup dominates either way, so the $INFO fast path bought
+# nothing once `output muted` still had to be queried.
+read -r VOL MUTED <<<"$(osascript \
+  -e 'set v to (get volume settings)' \
+  -e '(output volume of v as text) & " " & (output muted of v as text)' 2>/dev/null)"
 
 [[ "$VOL" =~ ^[0-9]+$ ]] || exit 0
 

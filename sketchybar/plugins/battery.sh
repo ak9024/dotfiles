@@ -3,7 +3,7 @@
 source "$CONFIG_DIR/colors.sh"
 
 BATT=$(pmset -g batt)
-PERCENT=$(echo "$BATT" | grep -Eo '\d+%' | cut -d% -f1)
+PERCENT=$(echo "$BATT" | grep -Eo '[0-9]+%' | cut -d% -f1)
 CHARGING=$(echo "$BATT" | grep -c 'AC Power')
 
 [ -z "$PERCENT" ] && exit 0

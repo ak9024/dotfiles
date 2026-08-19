@@ -1,5 +1,1 @@
 .DS_Store
-
-# Vendored release artifact, ~40KB of generated case statements.
-# bootstrap.sh pulls it at the pinned version instead.
-sketchybar/plugins/icon_map.sh

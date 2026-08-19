@@ -7,9 +7,13 @@ CONFIG_DIR="$HOME/.config/sketchybar"
 PLUGIN_DIR="$CONFIG_DIR/plugins"
 source "$CONFIG_DIR/colors.sh"
 
+# Plugins cache values that are static at runtime but not across a reload — the
+# workspace list follows persistent-workspaces in aerospace.toml, the Wi-Fi
+# device follows the hardware. A reload is the one moment both can have changed.
+rm -f "${TMPDIR:-/tmp}/sketchybar_aerospace_workspaces" \
+      "${TMPDIR:-/tmp}/sketchybar_wifi_device"
+
 FONT="Hack Nerd Font"
-# Ligature font: icon_map.sh emits ':chrome:' style tokens that render as glyphs
-APP_FONT="sketchybar-app-font"
 
 ##### BAR #####
 sketchybar --bar \
@@ -44,11 +48,12 @@ sketchybar --default \
 ##### AEROSPACE WORKSPACES (left) #####
 sketchybar --add event aerospace_workspace_change
 
+# The items are inert: no script, no subscription. One watcher below paints all
+# of them, so an app switch costs a fixed two AeroSpace queries instead of one
+# per workspace.
 for sid in $(aerospace list-workspaces --all); do
   sketchybar --add item space."$sid" left \
-    --subscribe space."$sid" aerospace_workspace_change front_app_switched \
     --set space."$sid" \
-      updates=on \
       icon="$sid" \
       icon.font="$FONT:Bold:14.0" \
       icon.padding_left=9 \
@@ -56,13 +61,25 @@ for sid in $(aerospace list-workspaces --all); do
       label.drawing=off \
       background.color="$ACCENT_COLOR" \
       background.drawing=off \
-      click_script="aerospace workspace $sid" \
-      script="$PLUGIN_DIR/aerospace.sh $sid"
+      drawing=off \
+      click_script="aerospace workspace $sid"
 done
+
+# Hidden, so updates=on is required — a when_shown item never runs its script.
+# update_freq is the only way to notice a window *closing*: AeroSpace fires
+# on-window-detected for new windows but has no matching close hook.
+sketchybar --add item space_watcher left \
+  --subscribe space_watcher aerospace_workspace_change front_app_switched \
+                            system_woke display_change \
+  --set space_watcher \
+    drawing=off \
+    updates=on \
+    update_freq=5 \
+    script="$PLUGIN_DIR/aerospace.sh"
 
 ##### FRONT APP (left) #####
 sketchybar --add item front_app left \
-  --subscribe front_app_switched \
+  --subscribe front_app front_app_switched system_woke display_change \
   --set front_app \
     icon.drawing=off \
     label.font="$FONT:Heavy:13.0" \
@@ -70,12 +87,22 @@ sketchybar --add item front_app left \
     padding_left=12 \
     script="$PLUGIN_DIR/front_app.sh"
 
+##### NOW PLAYING (centre) #####
+sketchybar --add item media center \
+  --subscribe media media_change \
+  --set media \
+    drawing=off \
+    label.color="$GREY" \
+    script="$PLUGIN_DIR/media.sh"
+
 ##### RIGHT SIDE #####
+# Added right-to-left: clock ends up rightmost.
 sketchybar --add item clock right \
+  --subscribe clock system_woke \
   --set clock \
     icon="󰥔" \
     icon.color="$MAGENTA" \
-    update_freq=10 \
+    update_freq=15 \
     script="$PLUGIN_DIR/clock.sh"
 
 sketchybar --add item battery right \
@@ -94,6 +121,20 @@ sketchybar --add item volume right \
   --subscribe volume volume_change \
   --set volume \
     script="$PLUGIN_DIR/volume.sh"
+
+sketchybar --add item cpu right \
+  --set cpu \
+    update_freq=5 \
+    script="$PLUGIN_DIR/cpu.sh"
+
+# Group the status readouts under one background so they read as a single block
+# against the bare workspace numbers on the left.
+sketchybar --add bracket status cpu volume wifi battery clock \
+  --set status \
+    background.drawing=on \
+    background.color="$ITEM_BG_COLOR" \
+    background.corner_radius=6 \
+    background.height=26
 
 ##### FINALIZE #####
 sketchybar --hotload on
