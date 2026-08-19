@@ -108,7 +108,8 @@ Rules only fire on window *creation*. Already-open windows stay where they are.
   and immediate.
 - **SSID shows as "Wi-Fi".** macOS 14+ gates the network name behind Location
   Services. Not a config bug.
-- **Now playing is untested.** `media_change` is a real SketchyBar event, but it
-  rides on MediaRemote, which macOS 15.4 closed off to third parties. The item
-  has never been seen populated here. A permanently blank centre is the
-  expected failure, and harmless — nothing else depends on it.
+- **Now playing never populates.** Confirmed on macOS 26: `media_change` fires
+  on every play and pause, but `$INFO` arrives empty. SketchyBar is fine; the
+  payload comes from MediaRemote, which macOS 15.4 closed to third parties.
+  The item stays hidden and nothing else depends on it, so it is kept as the
+  place to reattach a working source if one appears.
