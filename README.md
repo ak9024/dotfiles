@@ -66,7 +66,6 @@ just that parent. This is how mixed layouts get built.
 | Position | Item |
 |---|---|
 | Left | Workspace numbers, then the focused app name |
-| Centre | Now playing, hidden when nothing is |
 | Right | Load average + free memory, volume, Wi-Fi, battery, clock |
 
 Workspaces show their number. White is focused, grey holds windows, and an
@@ -108,8 +107,7 @@ Rules only fire on window *creation*. Already-open windows stay where they are.
   and immediate.
 - **SSID shows as "Wi-Fi".** macOS 14+ gates the network name behind Location
   Services. Not a config bug.
-- **Now playing never populates.** Confirmed on macOS 26: `media_change` fires
-  on every play and pause, but `$INFO` arrives empty. SketchyBar is fine; the
-  payload comes from MediaRemote, which macOS 15.4 closed to third parties.
-  The item stays hidden and nothing else depends on it, so it is kept as the
-  place to reattach a working source if one appears.
+- **No now-playing item, by design.** `media_change` fires on every play and
+  pause, but `$INFO` arrives empty on macOS 26 — the payload comes from
+  MediaRemote, which macOS 15.4 closed to third parties. Any item built on it
+  can only ever stay blank.

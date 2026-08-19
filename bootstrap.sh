@@ -13,8 +13,6 @@ log "Taps and packages"
 brew tap FelixKratz/formulae
 brew trust --formula felixkratz/formulae/sketchybar
 brew install sketchybar
-# macOS 15+ ships /usr/bin/jq, but the media plugin needs it on older releases.
-command -v jq >/dev/null || brew install jq
 brew install --cask nikitabobko/tap/aerospace
 brew install --cask font-hack-nerd-font
 

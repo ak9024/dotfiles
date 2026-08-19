@@ -85,14 +85,6 @@ sketchybar --add item front_app left \
     padding_left=12 \
     script="$PLUGIN_DIR/front_app.sh"
 
-##### NOW PLAYING (centre) #####
-sketchybar --add item media center \
-  --subscribe media media_change \
-  --set media \
-    drawing=off \
-    label.color="$GREY" \
-    script="$PLUGIN_DIR/media.sh"
-
 ##### RIGHT SIDE #####
 # Added right-to-left: clock ends up rightmost.
 sketchybar --add item clock right \
