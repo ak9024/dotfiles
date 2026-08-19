@@ -12,8 +12,7 @@ log() { printf '\n==> %s\n' "$1"; }
 log "Taps and packages"
 brew tap FelixKratz/formulae
 brew trust --formula felixkratz/formulae/sketchybar
-brew trust --formula felixkratz/formulae/borders
-brew install sketchybar borders
+brew install sketchybar
 brew install --cask nikitabobko/tap/aerospace
 brew install --cask font-hack-nerd-font
 

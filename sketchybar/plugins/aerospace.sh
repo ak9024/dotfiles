@@ -27,14 +27,14 @@ fi
 
 ARGS=()
 for sid in $WORKSPACES; do
+  # Focus is carried by icon colour alone; there is no highlight background.
   if [ "$sid" = "$FOCUSED" ]; then
-    ARGS+=(--set space."$sid" drawing=on background.drawing=on icon.color="$WHITE")
+    ARGS+=(--set space."$sid" drawing=on icon.color="$WHITE")
   elif [[ "$OCCUPIED" == *" $sid "* ]]; then
-    ARGS+=(--set space."$sid" drawing=on background.drawing=off icon.color="$GREY")
+    ARGS+=(--set space."$sid" drawing=on icon.color="$GREY")
   else
     # i3 behavior: empty, unfocused workspace is not drawn at all.
-    # Clear the highlight too, else it flashes stale on the next reveal.
-    ARGS+=(--set space."$sid" drawing=off background.drawing=off)
+    ARGS+=(--set space."$sid" drawing=off)
   fi
 done
 

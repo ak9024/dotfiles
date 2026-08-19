@@ -32,12 +32,6 @@ exec-on-workspace-change = [
   'sketchybar --trigger aerospace_workspace_change FOCUSED_WORKSPACE=$AEROSPACE_FOCUSED_WORKSPACE',
 ]
 
-# Focus indicator. Tiled windows have no shadow between them, so without a
-# border it is hard to tell which one has focus. Colors match colors.sh.
-after-startup-command = [
-  'exec-and-forget borders active_color=0xff7aa2f7 inactive_color=0xff565f89 width=5.0',
-]
-
 # Don't let macOS "hide others" fight the tiler
 automatically-unhide-macos-hidden-apps = false
 
