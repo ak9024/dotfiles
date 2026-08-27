@@ -257,6 +257,37 @@ run = 'layout floating'
 if.app-id = 'com.apple.calculator'
 run = 'layout floating'
 
+# Overlay that draws keystrokes — tiling it would give a keylogger a pane.
+[[on-window-detected]]
+if.app-id = 'io.github.keycastr'
+run = 'layout floating'
+
+# VPN clients: single fixed-size control panel each, nothing to tile.
+[[on-window-detected]]
+if.app-id = 'com.wireguard.macos'
+run = 'layout floating'
+
+[[on-window-detected]]
+if.app-id = 'com.betternet.macos'
+run = 'layout floating'
+
+[[on-window-detected]]
+if.app-id = 'com.apple.Preview'
+run = 'layout floating'
+
+# Xcode's satellite windows are dialogs, not editors. Float them but keep them
+# on the IDE workspace — this must precede the Xcode assignment below, since
+# only the first matching rule runs.
+[[on-window-detected]]
+if.app-id = 'com.apple.dt.Xcode'
+if.window-title-regex-substring = 'Organizer|Devices and Simulators|Preferences|Settings'
+run = ['layout floating', 'move-node-to-workspace 3']
+
+# The simulator has a fixed aspect ratio; tiling it just letterboxes the frame.
+[[on-window-detected]]
+if.app-id = 'com.apple.iphonesimulator'
+run = ['layout floating', 'move-node-to-workspace 3']
+
 # ── Assign apps to workspaces (i3: assign) ──
 # 1 terminal/containers  2 browser  3 IDE+DB+API  4 comms  5 media
 [[on-window-detected]]
@@ -265,6 +296,10 @@ run = 'move-node-to-workspace 1'
 
 [[on-window-detected]]
 if.app-id = 'dev.kdrag0n.MacVirt'
+run = 'move-node-to-workspace 1'
+
+[[on-window-detected]]
+if.app-id = 'com.electron.ollama'
 run = 'move-node-to-workspace 1'
 
 [[on-window-detected]]
