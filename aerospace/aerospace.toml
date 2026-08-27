@@ -50,6 +50,18 @@ outer.top        = 8
 outer.right      = 8
 
 # ─────────────────────────────────────────────
+# EXEC ENVIRONMENT
+# AeroSpace launches from launchd, so exec-and-forget gets launchd's stunted
+# PATH — /opt/homebrew/bin is absent and `aerospace`, `sketchybar` etc. are not
+# resolvable. Fixing it here means helper scripts no longer each re-export PATH.
+# ─────────────────────────────────────────────
+[exec]
+inherit-env-vars = true
+
+[exec.env-vars]
+PATH = '/opt/homebrew/bin:${PATH}'
+
+# ─────────────────────────────────────────────
 # MAIN MODE
 # alt = Option key
 # ─────────────────────────────────────────────
@@ -62,16 +74,24 @@ alt-enter = 'exec-and-forget open -na iTerm'
 alt-shift-q = 'close'
 
 # Focus — vim keys
-alt-h = 'focus left'
-alt-j = 'focus down'
-alt-k = 'focus up'
-alt-l = 'focus right'
+# --boundaries-action defaults to `stop`, which dead-ends at the edge. i3 wraps.
+# --boundaries stays at its default (`workspace`) — the only action it accepts
+# is wrap-around-the-workspace. Crossing monitors stays on alt-ctrl-h/l.
+alt-h = 'focus --boundaries-action wrap-around-the-workspace left'
+alt-j = 'focus --boundaries-action wrap-around-the-workspace down'
+alt-k = 'focus --boundaries-action wrap-around-the-workspace up'
+alt-l = 'focus --boundaries-action wrap-around-the-workspace right'
 
 # Focus — arrows
-alt-left  = 'focus left'
-alt-down  = 'focus down'
-alt-up    = 'focus up'
-alt-right = 'focus right'
+alt-left  = 'focus --boundaries-action wrap-around-the-workspace left'
+alt-down  = 'focus --boundaries-action wrap-around-the-workspace down'
+alt-up    = 'focus --boundaries-action wrap-around-the-workspace up'
+alt-right = 'focus --boundaries-action wrap-around-the-workspace right'
+
+# Cycle windows in tree order, ignoring geometry (i3: $mod+space-ish).
+# Useful when the layout is nested and directional focus feels unpredictable.
+alt-p = 'focus --boundaries-action wrap-around-the-workspace dfs-prev'
+alt-n = 'focus --boundaries-action wrap-around-the-workspace dfs-next'
 
 # Move window — vim keys
 alt-shift-h = 'move left'
@@ -135,6 +155,11 @@ alt-ctrl-l = 'focus-monitor right'
 alt-ctrl-shift-h = 'move-node-to-monitor left'
 alt-ctrl-shift-l = 'move-node-to-monitor right'
 
+# Move the whole workspace to another monitor (i3: $mod+Shift+<output>).
+# next/prev rather than left/right so it still works on a vertical arrangement.
+alt-ctrl-shift-comma  = 'move-workspace-to-monitor --wrap-around prev'
+alt-ctrl-shift-period = 'move-workspace-to-monitor --wrap-around next'
+
 # Enter resize mode (i3: $mod+r)
 alt-r = 'mode resize'
 
@@ -146,6 +171,9 @@ alt-g = 'mode join'
 # and a hardcoded /Users/<name> would break this repo on another machine.
 alt-minus       = 'exec-and-forget /bin/bash -c "$HOME/.config/aerospace/scratchpad.sh"'
 alt-shift-minus = 'move-node-to-workspace S'
+
+# Reload config without the service-mode detour (i3: $mod+Shift+c)
+alt-shift-c = 'reload-config'
 
 # Enter service mode (reload config, etc)
 alt-shift-semicolon = 'mode service'
