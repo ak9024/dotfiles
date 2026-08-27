@@ -66,7 +66,7 @@ just that parent. This is how mixed layouts get built.
 | Position | Item |
 |---|---|
 | Left | Workspace numbers, then the focused app name |
-| Right | Load average + free memory, volume, Wi-Fi, battery, clock |
+| Right | Load average + free memory, disk free, volume, network rate, Wi-Fi, battery, clock |
 
 Workspaces show their number. White is focused, grey holds windows, and an
 empty workspace is not drawn at all — i3 behaviour. There is no highlight
