@@ -23,8 +23,14 @@ default-root-container-orientation = 'auto'
 
 # Mouse follows focus (i3 default behavior). Without on-focus-changed the
 # cursor stays on the old window, so scroll/hover keeps hitting the wrong one.
+# The sketchybar trigger doubles as a close-window signal: AeroSpace has no
+# on-window-closed hook, but closing the focused window always moves focus, so
+# this repaints the bar instantly instead of waiting for the 5s watcher tick.
 on-focused-monitor-changed = ['move-mouse monitor-lazy-center']
-on-focus-changed = ['move-mouse window-lazy-center']
+on-focus-changed = [
+  'move-mouse window-lazy-center',
+  'exec-and-forget sketchybar --trigger aerospace_workspace_change',
+]
 
 # Tell sketchybar which workspace is focused
 exec-on-workspace-change = [

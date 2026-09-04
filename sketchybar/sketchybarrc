@@ -64,8 +64,10 @@ for sid in $(aerospace list-workspaces --all); do
 done
 
 # Hidden, so updates=on is required — a when_shown item never runs its script.
-# update_freq is the only way to notice a window *closing*: AeroSpace fires
-# on-window-detected for new windows but has no matching close hook.
+# Window closes have no AeroSpace hook; aerospace.toml's on-focus-changed
+# triggers aerospace_workspace_change to catch the common case (closing the
+# focused window moves focus). The 5s timer remains the backstop for windows
+# closed without a focus change (background app quits its own window).
 sketchybar --add item space_watcher left \
   --subscribe space_watcher aerospace_workspace_change front_app_switched \
                             system_woke display_change \
