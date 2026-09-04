@@ -288,6 +288,14 @@ run = ['layout floating', 'move-node-to-workspace 3']
 if.app-id = 'com.apple.iphonesimulator'
 run = ['layout floating', 'move-node-to-workspace 3']
 
+# Zoom's satellite windows (share toolbar/statusbar, floating video thumbnail,
+# notifications) are tiny control panels — tiling them wrecks the layout.
+# Must precede the workspace-4 assignment below: only the first match runs.
+[[on-window-detected]]
+if.app-id = 'us.zoom.xos'
+if.window-title-regex-substring = '(?i)zoom share|floating|statusbar|toolbar|notification'
+run = 'layout floating'
+
 # ── Assign apps to workspaces (i3: assign) ──
 # 1 terminal/containers  2 browser  3 IDE+DB+API  4 comms  5 media
 [[on-window-detected]]
